@@ -12,6 +12,8 @@ const (
 	ZeroLogBackend Implementation = iota
 	// LogrusBackend defines logrus as the actual log implementation
 	LogrusBackend
+	// GelfBackend initializes a new logger with zerolog, but logs in GELF format
+	GelfBackend
 )
 
 type Level int
@@ -39,6 +41,8 @@ func New(w io.Writer, lvl Level, impl Implementation) Logger {
 	switch impl {
 	case LogrusBackend:
 		l = newLogrus(w, lvl)
+	case GelfBackend:
+		l = newGelfLog(w, lvl)
 	case ZeroLogBackend:
 		fallthrough
 	default:

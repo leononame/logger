@@ -1,9 +1,10 @@
 package logger
 
 import (
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const IncorrectLevel Level = 1000
@@ -27,8 +28,8 @@ func tests() []struct {
 }
 
 func TestNew(t *testing.T) {
-	tests := []struct{
-		lvl Level
+	tests := []struct {
+		lvl    Level
 		panics bool
 	}{
 		{DebugLevel, false},
@@ -41,16 +42,20 @@ func TestNew(t *testing.T) {
 	}
 	for _, test := range tests {
 		var l Logger
-		f1 := func() { l = New(os.Stdout, test.lvl, LogrusBackend)}
-		f2 := func() { l = New(os.Stdout, test.lvl, ZeroLogBackend)}
+		f1 := func() { l = New(os.Stdout, test.lvl, LogrusBackend) }
+		f2 := func() { l = New(os.Stdout, test.lvl, ZeroLogBackend) }
+		f3 := func() { l = New(os.Stdout, test.lvl, GelfBackend) }
 
 		if test.panics {
 			assert.Panics(t, f1, "Creating a logger with invalid level should panic")
 			assert.Panics(t, f2, "Creating a logger with invalid level should panic")
+			assert.Panics(t, f3, "Creating a logger with invalid level should panic")
 		} else {
 			assert.NotPanics(t, f1, "Creating a logger with valid level should work")
 			assert.NotNil(t, l, "Logger should not be nil after creation")
 			assert.NotPanics(t, f2, "Creating a logger with valid level should work")
+			assert.NotNil(t, l, "Logger should not be nil after creation")
+			assert.NotPanics(t, f3, "Creating a logger with valid level should work")
 			assert.NotNil(t, l, "Logger should not be nil after creation")
 		}
 	}
