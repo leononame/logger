@@ -91,6 +91,8 @@ type mEntry struct {
 // be included in the final log entry
 func (m *mEntry) Flush(msg string) {
 	var r interface{} = nil
+	// Since this might be a Flush() call on panic level, we have to recover from each call.
+	// Otherwise, the rest of the loggers will not flush
 	for i := range m.es {
 		func() {
 			defer func() {
@@ -99,12 +101,13 @@ func (m *mEntry) Flush(msg string) {
 			m.es[i].Flush(msg)
 		}()
 	}
+	// If any panic call was recovered from, panic again, but only once
 	if r != nil {
-		panic(msg)
+		panic(r)
 	}
 }
 
-// Add a range of fields to the log statement
+// AddFields adds a range of fields to the log statement
 func (m *mEntry) AddFields(fields map[string]interface{}) Entry {
 	for i := range m.es {
 		m.es[i] = m.es[i].AddFields(fields)
@@ -112,7 +115,7 @@ func (m *mEntry) AddFields(fields map[string]interface{}) Entry {
 	return m
 }
 
-// Add an error to the log statement. The error will have the key "err". An error stack will be included
+// AddErr adds an error to the log statement. The error will have the key "err". An error stack will be included
 // under the key "err_stack"
 func (m *mEntry) AddErr(err error) Entry {
 	for i := range m.es {
@@ -121,7 +124,7 @@ func (m *mEntry) AddErr(err error) Entry {
 	return m
 }
 
-// Add an error to the log statement. An error stack will be included under the key "${key}_stack"
+// AddError adds an error to the log statement. An error stack will be included under the key "${key}_stack"
 func (m *mEntry) AddError(key string, val error) Entry {
 	for i := range m.es {
 		m.es[i] = m.es[i].AddError(key, val)
@@ -129,7 +132,7 @@ func (m *mEntry) AddError(key string, val error) Entry {
 	return m
 }
 
-// Add a bool value to the log statement.
+// AddBool adds a bool value to the log statement.
 func (m *mEntry) AddBool(key string, val bool) Entry {
 	for i := range m.es {
 		m.es[i] = m.es[i].AddBool(key, val)
@@ -137,7 +140,7 @@ func (m *mEntry) AddBool(key string, val bool) Entry {
 	return m
 }
 
-// Add an integer value to the log statement.
+// AddInt adds an integer value to the log statement.
 func (m *mEntry) AddInt(key string, val int) Entry {
 	for i := range m.es {
 		m.es[i] = m.es[i].AddInt(key, val)
@@ -145,7 +148,7 @@ func (m *mEntry) AddInt(key string, val int) Entry {
 	return m
 }
 
-// Add a string value to the log statement.
+// AddStr adds a string value to the log statement.
 func (m *mEntry) AddStr(key string, val string) Entry {
 	for i := range m.es {
 		m.es[i] = m.es[i].AddStr(key, val)
@@ -153,7 +156,7 @@ func (m *mEntry) AddStr(key string, val string) Entry {
 	return m
 }
 
-// Add a time value to the log statement.
+// AddTime adds a time value to the log statement.
 func (m *mEntry) AddTime(key string, val time.Time) Entry {
 	for i := range m.es {
 		m.es[i] = m.es[i].AddTime(key, val)
@@ -161,7 +164,7 @@ func (m *mEntry) AddTime(key string, val time.Time) Entry {
 	return m
 }
 
-// Add a duration value to the log statement.
+// AddDur adds a duration value to the log statement.
 func (m *mEntry) AddDur(key string, val time.Duration) Entry {
 	for i := range m.es {
 		m.es[i] = m.es[i].AddDur(key, val)
@@ -169,7 +172,7 @@ func (m *mEntry) AddDur(key string, val time.Duration) Entry {
 	return m
 }
 
-// Add any value to the log statement.
+// AddAny adds any value to the log statement.
 func (m *mEntry) AddAny(key string, val interface{}) Entry {
 	for i := range m.es {
 		m.es[i] = m.es[i].AddAny(key, val)

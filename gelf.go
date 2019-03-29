@@ -38,11 +38,13 @@ type gLog struct {
 	level  Level
 }
 
+// WithField returns a new Logger that always logs the specified field
 func (g *gLog) WithField(key, value string) Logger {
 	writer := g.writer.With().Str("_"+key, value).Logger()
 	return &gLog{writer: &writer, level: g.level}
 }
 
+// Level creates a new Entry with the specified Level
 func (g *gLog) Level(lvl Level) Entry {
 	switch lvl {
 	case DebugLevel:
@@ -62,6 +64,7 @@ func (g *gLog) Level(lvl Level) Entry {
 	}
 }
 
+// Debug creates a new Entry with level Debug
 func (g *gLog) Debug() Entry {
 	l := g.writer.With().Int("level", int(DebugLevel)).Logger()
 	var e = l.Log()
@@ -70,6 +73,8 @@ func (g *gLog) Debug() Entry {
 	}
 	return &gEntry{e, DebugLevel}
 }
+
+// Info creates a new Entry with level Info
 func (g *gLog) Info() Entry {
 	l := g.writer.With().Int("level", int(InfoLevel)).Logger()
 	var e = l.Log()
@@ -78,6 +83,8 @@ func (g *gLog) Info() Entry {
 	}
 	return &gEntry{e, InfoLevel}
 }
+
+// Warn creates a new Entry with level Warn
 func (g *gLog) Warn() Entry {
 	l := g.writer.With().Int("level", int(WarnLevel)).Logger()
 	var e = l.Log()
@@ -86,6 +93,8 @@ func (g *gLog) Warn() Entry {
 	}
 	return &gEntry{e, WarnLevel}
 }
+
+// Error creates a new Entry with level Error
 func (g *gLog) Error() Entry {
 	l := g.writer.With().Int("level", int(ErrorLevel)).Logger()
 	var e = l.Log()
@@ -94,6 +103,8 @@ func (g *gLog) Error() Entry {
 	}
 	return &gEntry{e, ErrorLevel}
 }
+
+// Fatal creates a new Entry with level Fatal. Executing a log at fatal level exits the application with exit code 1.
 func (g *gLog) Fatal() Entry {
 	l := g.writer.With().Int("level", int(FatalLevel)).Logger()
 	var e = l.Log()
@@ -102,6 +113,8 @@ func (g *gLog) Fatal() Entry {
 	}
 	return &gEntry{e, FatalLevel}
 }
+
+// Panic creates a new Entry with level Panic. Executing a log at panic level will call panic().
 func (g *gLog) Panic() Entry {
 	l := g.writer.With().Int("level", int(PanicLevel)).Logger()
 	var e = l.Log()
@@ -116,6 +129,8 @@ type gEntry struct {
 	lvl   Level
 }
 
+// Flush writes the entry as a single log statement. Optionally, a message can be added which will
+// be included in the final log entry
 func (g *gEntry) Flush(msg string) {
 	g.entry.Int64("timestamp", time.Now().Unix())
 	g.entry.Str("version", "1.1")
@@ -129,6 +144,7 @@ func (g *gEntry) Flush(msg string) {
 	}
 }
 
+// AddFields adds a range of fields to the log statement
 func (g *gEntry) AddFields(fs map[string]interface{}) Entry {
 	for k, v := range fs {
 		g.entry = g.entry.Interface("_"+k, v)
@@ -136,6 +152,8 @@ func (g *gEntry) AddFields(fs map[string]interface{}) Entry {
 	return g
 }
 
+// AddErr adds an error to the log statement. The error will have the key "err". An error stack will be included
+// under the key "err_stack"
 func (g *gEntry) AddErr(err error) Entry {
 	msg := err.Error()
 	st := errors.ErrorStack(err)
@@ -144,6 +162,7 @@ func (g *gEntry) AddErr(err error) Entry {
 	return g
 }
 
+// AddError adds an error to the log statement. An error stack will be included under the key "${key}_stack"
 func (g *gEntry) AddError(key string, val error) Entry {
 	msg := val.Error()
 	st := errors.ErrorStack(val)
@@ -153,31 +172,37 @@ func (g *gEntry) AddError(key string, val error) Entry {
 	return g
 }
 
+// AddBool adds a bool value to the log statement.
 func (g *gEntry) AddBool(key string, val bool) Entry {
 	g.entry = g.entry.Bool("_"+key, val)
 	return g
 }
 
+// AddInt adds an integer value to the log statement.
 func (g *gEntry) AddInt(key string, val int) Entry {
 	g.entry = g.entry.Int("_"+key, val)
 	return g
 }
 
+// AddStr adds a string value to the log statement.
 func (g *gEntry) AddStr(key string, val string) Entry {
 	g.entry = g.entry.Str("_"+key, val)
 	return g
 }
 
+// AddTime adds a time value to the log statement.
 func (g *gEntry) AddTime(key string, val time.Time) Entry {
 	g.entry = g.entry.Time("_"+key, val)
 	return g
 }
 
+// AddDur adds a duration value to the log statement.
 func (g *gEntry) AddDur(key string, val time.Duration) Entry {
 	g.entry = g.entry.Dur("_"+key, val)
 	return g
 }
 
+// AddAny adds any value to the log statement.
 func (g *gEntry) AddAny(key string, val interface{}) Entry {
 	g.entry = g.entry.Interface("_"+key, val)
 	return g

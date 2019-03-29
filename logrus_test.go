@@ -24,8 +24,8 @@ func TestLLog_Level(t *testing.T) {
 		var sb strings.Builder
 		l := New(&sb, test.lvl, LogrusBackend)
 
-		f := func() {l.Level(test.lvl).AddAny(test.key, test.val).Flush("Message")}
-		if test.lvl  == PanicLevel {
+		f := func() { l.Level(test.lvl).AddAny(test.key, test.val).Flush("Message") }
+		if test.lvl == PanicLevel {
 			assert.Panics(t, f, "Function should panic")
 		} else {
 			f()

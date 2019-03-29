@@ -3,6 +3,10 @@ package logger
 import (
 	"io"
 	"time"
+
+	"github.com/rs/zerolog"
+
+	"github.com/sirupsen/logrus"
 )
 
 type Implementation int
@@ -33,6 +37,16 @@ const (
 	// PanicLevel defines panic log level.
 	PanicLevel = 1
 )
+
+// FromLogrus creates a logger instance from an existing logrus logger
+func FromLogrus(l logrus.FieldLogger) Logger {
+	return &lLog{writer: l}
+}
+
+// FromZerolog creates a logger instance from an existing zerolog logger
+func FromZerolog(l *zerolog.Logger) Logger {
+	return &zLog{writer: l}
+}
 
 // New returns a logger. The logger will write to the writer specified and will use the log backend specified
 func New(w io.Writer, lvl Level, impl Implementation) Logger {
@@ -79,23 +93,23 @@ type Entry interface {
 	// be included in the final log entry
 	Flush(string)
 
-	// Add a range of fields to the log statement
+	// AddFields adds a range of fields to the log statement
 	AddFields(map[string]interface{}) Entry
-	// Add an error to the log statement. The error will have the key "err". An error stack will be included
+	// AddErr adds an error to the log statement. The error will have the key "err". An error stack will be included
 	// under the key "err_stack"
 	AddErr(err error) Entry
-	// Add an error to the log statement. An error stack will be included under the key "${key}_stack"
+	// AddError adds an error to the log statement. An error stack will be included under the key "${key}_stack"
 	AddError(key string, val error) Entry
-	// Add a bool value to the log statement.
+	// AddBool adds a bool value to the log statement.
 	AddBool(key string, val bool) Entry
-	// Add an integer value to the log statement.
+	// AddInt adds an integer value to the log statement.
 	AddInt(key string, val int) Entry
-	// Add a string value to the log statement.
+	// AddStr adds a string value to the log statement.
 	AddStr(key string, val string) Entry
-	// Add a time value to the log statement.
+	// AddTime adds a time value to the log statement.
 	AddTime(key string, val time.Time) Entry
-	// Add a duration value to the log statement.
+	// AddDur adds a duration value to the log statement.
 	AddDur(key string, val time.Duration) Entry
-	// Add any value to the log statement.
+	// AddAny adds any value to the log statement.
 	AddAny(key string, val interface{}) Entry
 }

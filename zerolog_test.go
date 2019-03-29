@@ -14,8 +14,8 @@ func TestZLog_Level(t *testing.T) {
 	for _, test := range tests() {
 		var sb strings.Builder
 		l := New(&sb, test.lvl, ZeroLogBackend)
-		f := func() {l.Level(test.lvl).AddAny(test.key, test.val).Flush("Message")}
-		if test.lvl  == PanicLevel {
+		f := func() { l.Level(test.lvl).AddAny(test.key, test.val).Flush("Message") }
+		if test.lvl == PanicLevel {
 			assert.Panics(t, f, "Function should panic")
 		} else {
 			f()
