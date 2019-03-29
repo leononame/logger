@@ -1,0 +1,23 @@
+kind: pipeline
+name: default
+
+steps:
+- name: test
+  image: golang:1.12
+  environment:
+    CGO_ENABLED: 0
+    GO111MODULE: on
+  commands:
+  - go test -mod=vendor -cover -coverprofile coverage.out $(go list ./... | grep -v /vendor/)
+- name: build
+  image: golang:1.12
+  environment:
+    CGO_ENABLED: 0
+    GO111MODULE: on
+  commands:
+  - go build -mod=vendor
+- name: coverage
+  image: plugins/codecov
+  settings:
+    token:
+      from_secret: CODECOV_TOKEN
