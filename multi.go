@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+// NewMulti generates a new logger that wraps around the specified loggers. Each call to the new logger will call
+// all specified loggers
 func NewMulti(ls ...Logger) Logger {
 	return &mLog{ls: ls}
 }

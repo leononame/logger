@@ -1,10 +1,10 @@
-# Logger
+# Logger [![GoDoc](https://godoc.org/github.com/leononame/logger?status.svg)](https://godoc.org/github.com/leononame/logger) [![Build Status](https://cloud.drone.io/api/badges/leononame/logger/status.svg)](https://cloud.drone.io/leononame/logger) [![codecov](https://codecov.io/gh/leononame/logger/branch/master/graph/badge.svg)](https://codecov.io/gh/leononame/logger)
 
 This package contains an abstraction for logging so different log implementations can be used for different purposes.
 
 ## Why?
 
-Depending on your use case you might want to use a different log implementation. Logrus looks nice on a console output, but is a rather slow JSON logger.
+Depending on your use case you might want to use a different log implementation. Logrus looks nice on a console output, but is a rather slow JSON logger.   
 
 Another reason might be you want to use multiple parametrized loggers. This package allows you to wrap multiple loggers around a single interface. Each logger can have its own io.Writer as Output and its own log level set. This way, you can send only Error+Above levels to one of your log servers and have a second log server which gets log levels of all type, plus a third logger which prints errors to stdout.
 
