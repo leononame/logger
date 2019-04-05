@@ -1,12 +1,7 @@
 package logger
 
 import (
-	"io"
 	"time"
-
-	"github.com/rs/zerolog"
-
-	"github.com/sirupsen/logrus"
 )
 
 type Implementation int
@@ -37,33 +32,6 @@ const (
 	// PanicLevel defines panic log level.
 	PanicLevel = 1
 )
-
-// FromLogrus creates a logger instance from an existing logrus logger
-func FromLogrus(l logrus.FieldLogger) Logger {
-	return &lLog{writer: l}
-}
-
-// FromZerolog creates a logger instance from an existing zerolog logger
-func FromZerolog(l *zerolog.Logger) Logger {
-	return &zLog{writer: l}
-}
-
-// New returns a logger. The logger will write to the writer specified and will use the log backend specified
-func New(w io.Writer, lvl Level, impl Implementation) Logger {
-	var l Logger
-	// only one implementation, always go to default case
-	switch impl {
-	case LogrusBackend:
-		l = newLogrus(w, lvl)
-	case GelfBackend:
-		l = newGelfLog(w, lvl)
-	case ZeroLogBackend:
-		fallthrough
-	default:
-		l = newZeroLog(w, lvl)
-	}
-	return l
-}
 
 // Logger is an standard interface for logging so that different log implementations can be wrapped around.
 // The API is heavily influenced by the zerolog API for structured JSON logging

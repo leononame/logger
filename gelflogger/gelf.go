@@ -1,4 +1,4 @@
-package logger
+package gelflogger
 
 import (
 	"fmt"
@@ -6,58 +6,60 @@ import (
 	"os"
 	"time"
 
+	"github.com/leononame/logger"
+
 	"github.com/juju/errors"
 	"github.com/rs/zerolog"
 )
 
-func ltog(level Level) zerolog.Level {
+func ltog(level logger.Level) zerolog.Level {
 	switch level {
-	case DebugLevel:
+	case logger.DebugLevel:
 		return zerolog.DebugLevel
-	case InfoLevel:
+	case logger.InfoLevel:
 		return zerolog.InfoLevel
-	case WarnLevel:
+	case logger.WarnLevel:
 		return zerolog.WarnLevel
-	case ErrorLevel:
+	case logger.ErrorLevel:
 		return zerolog.ErrorLevel
-	case FatalLevel:
+	case logger.FatalLevel:
 		return zerolog.FatalLevel
-	case PanicLevel:
+	case logger.PanicLevel:
 		return zerolog.PanicLevel
 	}
 	panic(fmt.Sprintf("Can't map level %d to zerolog level", level))
 }
 
-func newGelfLog(w io.Writer, lvl Level) Logger {
+func New(w io.Writer, lvl logger.Level) logger.Logger {
 	l := zerolog.New(w).Level(ltog(lvl))
 	return &gLog{&l, lvl}
 }
 
 type gLog struct {
 	writer *zerolog.Logger
-	level  Level
+	level  logger.Level
 }
 
 // WithField returns a new Logger that always logs the specified field
-func (g *gLog) WithField(key, value string) Logger {
+func (g *gLog) WithField(key, value string) logger.Logger {
 	writer := g.writer.With().Str("_"+key, value).Logger()
 	return &gLog{writer: &writer, level: g.level}
 }
 
 // Level creates a new Entry with the specified Level
-func (g *gLog) Level(lvl Level) Entry {
+func (g *gLog) Level(lvl logger.Level) logger.Entry {
 	switch lvl {
-	case DebugLevel:
+	case logger.DebugLevel:
 		return g.Debug()
-	case InfoLevel:
+	case logger.InfoLevel:
 		return g.Info()
-	case WarnLevel:
+	case logger.WarnLevel:
 		return g.Warn()
-	case ErrorLevel:
+	case logger.ErrorLevel:
 		return g.Error()
-	case FatalLevel:
+	case logger.FatalLevel:
 		return g.Fatal()
-	case PanicLevel:
+	case logger.PanicLevel:
 		return g.Panic()
 	default:
 		return g.Info()
@@ -65,68 +67,68 @@ func (g *gLog) Level(lvl Level) Entry {
 }
 
 // Debug creates a new Entry with level Debug
-func (g *gLog) Debug() Entry {
-	l := g.writer.With().Int("level", int(DebugLevel)).Logger()
+func (g *gLog) Debug() logger.Entry {
+	l := g.writer.With().Int("level", int(logger.DebugLevel)).Logger()
 	var e = l.Log()
-	if g.level < DebugLevel {
+	if g.level < logger.DebugLevel {
 		e = nil
 	}
-	return &gEntry{e, DebugLevel}
+	return &gEntry{e, logger.DebugLevel}
 }
 
 // Info creates a new Entry with level Info
-func (g *gLog) Info() Entry {
-	l := g.writer.With().Int("level", int(InfoLevel)).Logger()
+func (g *gLog) Info() logger.Entry {
+	l := g.writer.With().Int("level", int(logger.InfoLevel)).Logger()
 	var e = l.Log()
-	if g.level < InfoLevel {
+	if g.level < logger.InfoLevel {
 		e = nil
 	}
-	return &gEntry{e, InfoLevel}
+	return &gEntry{e, logger.InfoLevel}
 }
 
 // Warn creates a new Entry with level Warn
-func (g *gLog) Warn() Entry {
-	l := g.writer.With().Int("level", int(WarnLevel)).Logger()
+func (g *gLog) Warn() logger.Entry {
+	l := g.writer.With().Int("level", int(logger.WarnLevel)).Logger()
 	var e = l.Log()
-	if g.level < WarnLevel {
+	if g.level < logger.WarnLevel {
 		e = nil
 	}
-	return &gEntry{e, WarnLevel}
+	return &gEntry{e, logger.WarnLevel}
 }
 
 // Error creates a new Entry with level Error
-func (g *gLog) Error() Entry {
-	l := g.writer.With().Int("level", int(ErrorLevel)).Logger()
+func (g *gLog) Error() logger.Entry {
+	l := g.writer.With().Int("level", int(logger.ErrorLevel)).Logger()
 	var e = l.Log()
-	if g.level < ErrorLevel {
+	if g.level < logger.ErrorLevel {
 		e = nil
 	}
-	return &gEntry{e, ErrorLevel}
+	return &gEntry{e, logger.ErrorLevel}
 }
 
 // Fatal creates a new Entry with level Fatal. Executing a log at fatal level exits the application with exit code 1.
-func (g *gLog) Fatal() Entry {
-	l := g.writer.With().Int("level", int(FatalLevel)).Logger()
+func (g *gLog) Fatal() logger.Entry {
+	l := g.writer.With().Int("level", int(logger.FatalLevel)).Logger()
 	var e = l.Log()
-	if g.level < FatalLevel {
+	if g.level < logger.FatalLevel {
 		e = nil
 	}
-	return &gEntry{e, FatalLevel}
+	return &gEntry{e, logger.FatalLevel}
 }
 
 // Panic creates a new Entry with level Panic. Executing a log at panic level will call panic().
-func (g *gLog) Panic() Entry {
-	l := g.writer.With().Int("level", int(PanicLevel)).Logger()
+func (g *gLog) Panic() logger.Entry {
+	l := g.writer.With().Int("level", int(logger.PanicLevel)).Logger()
 	var e = l.Log()
-	if g.level < PanicLevel {
+	if g.level < logger.PanicLevel {
 		e = nil
 	}
-	return &gEntry{e, PanicLevel}
+	return &gEntry{e, logger.PanicLevel}
 }
 
 type gEntry struct {
 	entry *zerolog.Event
-	lvl   Level
+	lvl   logger.Level
 }
 
 // Flush writes the entry as a single log statement. Optionally, a message can be added which will
@@ -137,15 +139,15 @@ func (g *gEntry) Flush(msg string) {
 	g.entry.Str("short_message", msg)
 	// This skips a message in zerolog
 	g.entry.Msg("")
-	if g.lvl == PanicLevel {
+	if g.lvl == logger.PanicLevel {
 		panic("logger called at panic level with message: " + msg)
-	} else if g.lvl == FatalLevel {
+	} else if g.lvl == logger.FatalLevel {
 		os.Exit(1)
 	}
 }
 
 // AddFields adds a range of fields to the log statement
-func (g *gEntry) AddFields(fs map[string]interface{}) Entry {
+func (g *gEntry) AddFields(fs map[string]interface{}) logger.Entry {
 	for k, v := range fs {
 		g.entry = g.entry.Interface("_"+k, v)
 	}
@@ -154,7 +156,7 @@ func (g *gEntry) AddFields(fs map[string]interface{}) Entry {
 
 // AddErr adds an error to the log statement. The error will have the key "err". An error stack will be included
 // under the key "err_stack"
-func (g *gEntry) AddErr(err error) Entry {
+func (g *gEntry) AddErr(err error) logger.Entry {
 	msg := err.Error()
 	st := errors.ErrorStack(err)
 	g.entry = g.entry.Str("_err", msg)
@@ -163,7 +165,7 @@ func (g *gEntry) AddErr(err error) Entry {
 }
 
 // AddError adds an error to the log statement. An error stack will be included under the key "${key}_stack"
-func (g *gEntry) AddError(key string, val error) Entry {
+func (g *gEntry) AddError(key string, val error) logger.Entry {
 	msg := val.Error()
 	st := errors.ErrorStack(val)
 	g.entry = g.entry.Str("_"+key, msg)
@@ -173,37 +175,37 @@ func (g *gEntry) AddError(key string, val error) Entry {
 }
 
 // AddBool adds a bool value to the log statement.
-func (g *gEntry) AddBool(key string, val bool) Entry {
+func (g *gEntry) AddBool(key string, val bool) logger.Entry {
 	g.entry = g.entry.Bool("_"+key, val)
 	return g
 }
 
 // AddInt adds an integer value to the log statement.
-func (g *gEntry) AddInt(key string, val int) Entry {
+func (g *gEntry) AddInt(key string, val int) logger.Entry {
 	g.entry = g.entry.Int("_"+key, val)
 	return g
 }
 
 // AddStr adds a string value to the log statement.
-func (g *gEntry) AddStr(key string, val string) Entry {
+func (g *gEntry) AddStr(key string, val string) logger.Entry {
 	g.entry = g.entry.Str("_"+key, val)
 	return g
 }
 
 // AddTime adds a time value to the log statement.
-func (g *gEntry) AddTime(key string, val time.Time) Entry {
+func (g *gEntry) AddTime(key string, val time.Time) logger.Entry {
 	g.entry = g.entry.Time("_"+key, val)
 	return g
 }
 
 // AddDur adds a duration value to the log statement.
-func (g *gEntry) AddDur(key string, val time.Duration) Entry {
+func (g *gEntry) AddDur(key string, val time.Duration) logger.Entry {
 	g.entry = g.entry.Dur("_"+key, val)
 	return g
 }
 
 // AddAny adds any value to the log statement.
-func (g *gEntry) AddAny(key string, val interface{}) Entry {
+func (g *gEntry) AddAny(key string, val interface{}) logger.Entry {
 	g.entry = g.entry.Interface("_"+key, val)
 	return g
 }

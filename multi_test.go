@@ -1,4 +1,4 @@
-package logger
+package logger_test
 
 import (
 	"fmt"
@@ -6,15 +6,42 @@ import (
 	"testing"
 	"time"
 
+	"github.com/leononame/logger"
+	"github.com/leononame/logger/logruslogger"
+	"github.com/leononame/logger/zerologlogger"
+
+	"github.com/leononame/logger/gelflogger"
+
 	"github.com/juju/errors"
+	. "github.com/leononame/logger"
 	"github.com/stretchr/testify/assert"
 )
 
+const IncorrectLevel logger.Level = 1000
+
+func tests() []struct {
+	lvl logger.Level
+	key string
+	val interface{}
+} {
+	return []struct {
+		lvl logger.Level
+		key string
+		val interface{}
+	}{
+		{logger.DebugLevel, "lvldebug", "true"},
+		{logger.InfoLevel, "lvlinfo", "true"},
+		{logger.WarnLevel, "lvlwarn", "true"},
+		{logger.ErrorLevel, "lvlerr", "true"},
+		{logger.PanicLevel, "lvlpanic", "true"},
+	}
+}
+
 func multiLogger(lvl Level) (Logger, []strings.Builder) {
 	sbs := make([]strings.Builder, 3)
-	l0 := New(&sbs[0], lvl, GelfBackend)
-	l1 := New(&sbs[1], lvl, ZeroLogBackend)
-	l2 := New(&sbs[2], lvl, LogrusBackend)
+	l0 := gelflogger.New(&sbs[0], lvl)
+	l1 := zerologlogger.New(&sbs[1], lvl)
+	l2 := logruslogger.New(&sbs[2], lvl)
 	return NewMulti(l0, l1, l2), sbs
 }
 
