@@ -19,7 +19,7 @@ steps:
     CGO_ENABLED: 0
     GO111MODULE: on
   commands:
-  - go build -mod=vendor
+  - go build
 - name: coverage
   image: plugins/codecov
   settings:

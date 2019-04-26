@@ -12,9 +12,9 @@ Another reason might be you want to use multiple parametrized loggers. This pack
 
 It's relatively easy to build a wrapper around the standard interface. There are currently three implementations: logrus, zerolog and gelf.
 
-- Logrus can be used as a console logger while running your application locally
-- Zerolog is a fast JSON logger that prints everything as a JSON message
-- GELF is a wrapper around zerolog that prints everything in GELF format.
+- [Logrus](https://github.com/leononame/logger-logrus) can be used as a console logger while running your application locally
+- [Zerolog](https://github.com/leononame/logger-zerolog)  is a fast JSON logger that prints everything as a JSON message
+- [GELF](https://github.com/leononame/logger-gelf)  is a wrapper around zerolog that prints everything in GELF format.
 
 Additionally, a Multilogger exists. You can pass as many loggers as you want to your Multilogger and the Multilogger behaves as a single logger that calls the same functions on all Loggers.
 
