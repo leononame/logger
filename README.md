@@ -32,11 +32,12 @@ import (
 
 	"github.com/juju/errors"
 	"github.com/leononame/logger"
+	"github.com/leononame/logger/logrus"
 )
 
 func main() {
 	// Options are: LogrusBackend, ZerologBackend, GelfBackend
-	l := logger.New(os.Stdout, logger.InfoLevel, logger.LogrusBackend)
+	l := logrus.New(os.Stdout, logger.InfoLevel)
 	err := errors.New("test")
 	l.Info().AddStr("key", "value").AddErr(err).Flush("some message")
 }
@@ -60,11 +61,13 @@ import (
 
 	"github.com/juju/errors"
 	"github.com/leononame/logger"
+	"github.com/leononame/logger/logrus"
+	"github.com/leononame/logger/zerolog"
 )
 
 func main() {
-	l1 := logger.New(os.Stdout, logger.InfoLevel, logger.LogrusBackend)
-	l2 := logger.New(os.Stderr, logger.ErrorLevel, logger.ZeroLogBackend)
+	l1 := logrus.New(os.Stdout, logger.InfoLevel)
+	l2 := zerolog.New(os.Stderr, logger.ErrorLevel)
 	l := logger.NewMulti(l1, l2)
 	// This gets printed to stdout with logrus
 	l.Info().AddStr("key", "value").Flush("message")

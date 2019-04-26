@@ -1,13 +1,12 @@
-package zerologlogger
+package zerolog
 
 import (
 	"fmt"
 	"io"
 	"time"
 
-	"github.com/leononame/logger"
-
 	"github.com/juju/errors"
+	"github.com/leononame/logger"
 	"github.com/rs/zerolog"
 )
 

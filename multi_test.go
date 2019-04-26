@@ -6,14 +6,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/leononame/logger"
-	"github.com/leononame/logger/logruslogger"
-	"github.com/leononame/logger/zerologlogger"
-
-	"github.com/leononame/logger/gelflogger"
-
 	"github.com/juju/errors"
+	"github.com/leononame/logger"
 	. "github.com/leononame/logger"
+	"github.com/leononame/logger/gelf"
+	"github.com/leononame/logger/logrus"
+	"github.com/leononame/logger/zerolog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -39,9 +37,9 @@ func tests() []struct {
 
 func multiLogger(lvl Level) (Logger, []strings.Builder) {
 	sbs := make([]strings.Builder, 3)
-	l0 := gelflogger.New(&sbs[0], lvl)
-	l1 := zerologlogger.New(&sbs[1], lvl)
-	l2 := logruslogger.New(&sbs[2], lvl)
+	l0 := gelf.New(&sbs[0], lvl)
+	l1 := zerolog.New(&sbs[1], lvl)
+	l2 := logrus.New(&sbs[2], lvl)
 	return NewMulti(l0, l1, l2), sbs
 }
 

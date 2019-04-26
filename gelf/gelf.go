@@ -1,4 +1,4 @@
-package gelflogger
+package gelf
 
 import (
 	"fmt"
@@ -6,9 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/leononame/logger"
-
 	"github.com/juju/errors"
+	"github.com/leononame/logger"
 	"github.com/rs/zerolog"
 )
 

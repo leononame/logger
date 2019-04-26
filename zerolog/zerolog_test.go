@@ -1,4 +1,4 @@
-package logruslogger
+package zerolog
 
 import (
 	"fmt"
@@ -32,20 +32,10 @@ func tests() []struct {
 	}
 }
 
-func TestLLog_WithField(t *testing.T) {
-	var sb strings.Builder
-	l := New(&sb, logger.DebugLevel).WithField("somekey", "someval")
-	l.Debug().AddStr("otherkey", "otherval").Flush("message")
-	s := sb.String()
-	assert.Contains(t, s, "somekey", "Log message should contain key")
-	assert.Contains(t, s, "someval", "Log message should contain value")
-}
-
-func TestLLog_Level(t *testing.T) {
+func TestZLog_Level(t *testing.T) {
 	for _, test := range tests() {
 		var sb strings.Builder
 		l := New(&sb, test.lvl)
-
 		f := func() { l.Level(test.lvl).AddAny(test.key, test.val).Flush("Message") }
 		if test.lvl == logger.PanicLevel {
 			assert.Panics(t, f, "Function should panic")
@@ -57,7 +47,7 @@ func TestLLog_Level(t *testing.T) {
 	}
 }
 
-func TestLLog_Level2(t *testing.T) {
+func TestZLog_Level2(t *testing.T) {
 	var sb strings.Builder
 	l := New(&sb, logger.InfoLevel)
 	l.Level(IncorrectLevel).AddAny("somekey", "someval").Flush("Message")
@@ -66,7 +56,16 @@ func TestLLog_Level2(t *testing.T) {
 	assert.Contains(t, s, "info", "Logger should print at info level")
 }
 
-func TestLLog_Debug(t *testing.T) {
+func TestZLog_WithField(t *testing.T) {
+	var sb strings.Builder
+	l := New(&sb, logger.DebugLevel).WithField("somekey", "someval")
+	l.Debug().AddStr("otherkey", "otherval").Flush("message")
+	s := sb.String()
+	assert.Contains(t, s, "somekey", "Log message should contain key")
+	assert.Contains(t, s, "someval", "Log message should contain value")
+}
+
+func TestZLog_Debug(t *testing.T) {
 	for _, test := range tests() {
 		var sb strings.Builder
 		l := New(&sb, test.lvl)
@@ -82,7 +81,7 @@ func TestLLog_Debug(t *testing.T) {
 	}
 }
 
-func TestLLog_Info(t *testing.T) {
+func TestZLog_Info(t *testing.T) {
 	for _, test := range tests() {
 		var sb strings.Builder
 		l := New(&sb, test.lvl)
@@ -98,7 +97,7 @@ func TestLLog_Info(t *testing.T) {
 	}
 }
 
-func TestLLog_Warn(t *testing.T) {
+func TestZLog_Warn(t *testing.T) {
 	for _, test := range tests() {
 		var sb strings.Builder
 		l := New(&sb, test.lvl)
@@ -114,7 +113,7 @@ func TestLLog_Warn(t *testing.T) {
 	}
 }
 
-func TestLLog_Error(t *testing.T) {
+func TestZLog_Error(t *testing.T) {
 	for _, test := range tests() {
 		var sb strings.Builder
 		l := New(&sb, test.lvl)
@@ -130,7 +129,7 @@ func TestLLog_Error(t *testing.T) {
 	}
 }
 
-func TestLLog_Panic(t *testing.T) {
+func TestZLog_Panic(t *testing.T) {
 	for _, test := range tests() {
 		var sb strings.Builder
 		l := New(&sb, test.lvl)
@@ -150,7 +149,7 @@ func TestLLog_Panic(t *testing.T) {
 	}
 }
 
-func TestLEntry_AddBool(t *testing.T) {
+func TestZEntry_AddBool(t *testing.T) {
 	key := "boolkey"
 	var sb strings.Builder
 	l := New(&sb, logger.DebugLevel)
@@ -158,7 +157,7 @@ func TestLEntry_AddBool(t *testing.T) {
 	assert.Contains(t, sb.String(), key, "Message should contain key")
 }
 
-func TestLEntry_AddDur(t *testing.T) {
+func TestZEntry_AddDur(t *testing.T) {
 	key := "durkey"
 	var sb strings.Builder
 	l := New(&sb, logger.DebugLevel)
@@ -166,7 +165,7 @@ func TestLEntry_AddDur(t *testing.T) {
 	assert.Contains(t, sb.String(), key, "Message should contain key")
 }
 
-func TestLEntry_AddAny(t *testing.T) {
+func TestZEntry_AddAny(t *testing.T) {
 	key := "anykey"
 	val := "valval"
 	var sb strings.Builder
@@ -177,7 +176,7 @@ func TestLEntry_AddAny(t *testing.T) {
 	assert.Contains(t, s, val, "Message should contain value")
 }
 
-func TestLEntry_AddErr(t *testing.T) {
+func TestZEntry_AddErr(t *testing.T) {
 	var sb strings.Builder
 	l := New(&sb, logger.DebugLevel)
 	err := errors.New("asd")
@@ -189,7 +188,7 @@ func TestLEntry_AddErr(t *testing.T) {
 	assert.Contains(t, s, "other err", "Message should contain other error mesage")
 }
 
-func TestLEntry_AddError(t *testing.T) {
+func TestZEntry_AddError(t *testing.T) {
 	key := "errkey"
 	var sb strings.Builder
 	l := New(&sb, logger.DebugLevel)
@@ -203,7 +202,7 @@ func TestLEntry_AddError(t *testing.T) {
 	assert.Contains(t, s, "other err", "Message should contain other error mesage")
 }
 
-func TestLEntry_AddFields(t *testing.T) {
+func TestZEntry_AddFields(t *testing.T) {
 	data := map[string]interface{}{
 		// avoid time as value because we don't control formatting necessarily
 		"key1":      "strval",
@@ -220,7 +219,7 @@ func TestLEntry_AddFields(t *testing.T) {
 	}
 }
 
-func TestLEntry_AddInt(t *testing.T) {
+func TestZEntry_AddInt(t *testing.T) {
 	key := "intkey"
 	val := 1990123
 	var sb strings.Builder
@@ -231,7 +230,7 @@ func TestLEntry_AddInt(t *testing.T) {
 	assert.Contains(t, s, fmt.Sprint(val), "Message should contain value")
 }
 
-func TestLEntry_AddStr(t *testing.T) {
+func TestZEntry_AddStr(t *testing.T) {
 	key := "strkey"
 	val := "thisisavalue"
 	var sb strings.Builder
@@ -243,7 +242,7 @@ func TestLEntry_AddStr(t *testing.T) {
 
 }
 
-func TestLEntry_AddTime(t *testing.T) {
+func TestZEntry_AddTime(t *testing.T) {
 	key := "timekey"
 	val := time.Now()
 	var sb strings.Builder
