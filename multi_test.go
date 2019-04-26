@@ -1,6 +1,7 @@
 package logger_test
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 	"testing"
@@ -9,9 +10,6 @@ import (
 	"github.com/juju/errors"
 	"github.com/leononame/logger"
 	. "github.com/leononame/logger"
-	"github.com/leononame/logger/gelf"
-	"github.com/leononame/logger/logrus"
-	"github.com/leononame/logger/zerolog"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,9 +35,9 @@ func tests() []struct {
 
 func multiLogger(lvl Level) (Logger, []strings.Builder) {
 	sbs := make([]strings.Builder, 3)
-	l0 := gelf.New(&sbs[0], lvl)
-	l1 := zerolog.New(&sbs[1], lvl)
-	l2 := logrus.New(&sbs[2], lvl)
+	l0 := &l{w: &sbs[0], buff: &bytes.Buffer{}, lvl: lvl}
+	l1 := &l{w: &sbs[1], buff: &bytes.Buffer{}, lvl: lvl}
+	l2 := &l{w: &sbs[2], buff: &bytes.Buffer{}, lvl: lvl}
 	return NewMulti(l0, l1, l2), sbs
 }
 
