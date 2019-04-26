@@ -92,7 +92,7 @@ type mEntry struct {
 // Flush writes the entry as a single log statement. Optionally, a message can be added which will
 // be included in the final log entry
 func (m *mEntry) Flush(msg string) {
-	var r interface{} = nil
+	var r interface{}
 	// Since this might be a Flush() call on panic level, we have to recover from each call.
 	// Otherwise, the rest of the loggers will not flush
 	for i := range m.es {

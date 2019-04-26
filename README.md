@@ -20,6 +20,10 @@ Additionally, a Multilogger exists. You can pass as many loggers as you want to 
 
 ## Usage
 
+### Import
+
+Use the import path `github.com/leononame/logger/v2`
+
 ### Simple
 
 Create a logger with new and select a predefined implementation.
@@ -31,7 +35,7 @@ import (
 	"os"
 
 	"github.com/juju/errors"
-	"github.com/leononame/logger"
+	"github.com/leononame/logger/v2"
 	"github.com/leononame/logger-logrus"
 )
 
@@ -60,7 +64,7 @@ import (
 	"os"
 
 	"github.com/juju/errors"
-	"github.com/leononame/logger"
+	"github.com/leononame/logger/v2"
 	"github.com/leononame/logger-logrus"
 	"github.com/leononame/logger-zerolog"
 )

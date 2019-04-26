@@ -4,17 +4,7 @@ import (
 	"time"
 )
 
-type Implementation int
-
-const (
-	// ZeroLogBackend defines zerolog as the actual log implementation
-	ZeroLogBackend Implementation = iota
-	// LogrusBackend defines logrus as the actual log implementation
-	LogrusBackend
-	// GelfBackend initializes a new logger with zerolog, but logs in GELF format
-	GelfBackend
-)
-
+// Level is the type for different log levels
 type Level int
 
 // Levels have the same value as syslog, hence 5 is skipped
