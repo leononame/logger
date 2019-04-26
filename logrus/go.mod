@@ -1,4 +1,4 @@
-module github.com/leononame/logger/logruslogger
+module github.com/leononame/logger/logrus
 
 go 1.12
 

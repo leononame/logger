@@ -1,4 +1,4 @@
-module github.com/leononame/logger/gelflogger
+module github.com/leononame/logger/gelf
 
 go 1.12
 

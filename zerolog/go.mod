@@ -1,4 +1,4 @@
-module github.com/leononame/logger/zerologlogger
+module github.com/leononame/logger/zerolog
 
 go 1.12
 
