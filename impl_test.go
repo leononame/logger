@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/juju/errors"
-
 	"github.com/leononame/logger"
 )
 

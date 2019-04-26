@@ -32,7 +32,7 @@ import (
 
 	"github.com/juju/errors"
 	"github.com/leononame/logger"
-	"github.com/leononame/logger/logrus"
+	"github.com/leononame/logger-logrus"
 )
 
 func main() {
@@ -61,8 +61,8 @@ import (
 
 	"github.com/juju/errors"
 	"github.com/leononame/logger"
-	"github.com/leononame/logger/logrus"
-	"github.com/leononame/logger/zerolog"
+	"github.com/leononame/logger-logrus"
+	"github.com/leononame/logger-zerolog"
 )
 
 func main() {
