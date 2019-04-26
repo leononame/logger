@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/juju/errors"
-	"github.com/leononame/logger"
+	"github.com/leononame/logger/v2"
 )
 
 type l struct {
