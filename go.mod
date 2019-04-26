@@ -1,4 +1,4 @@
-module github.com/leononame/logger
+module github.com/leononame/logger/v2
 
 go 1.12
 

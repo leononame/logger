@@ -4,7 +4,7 @@ This package contains an abstraction for logging so different log implementation
 
 ## Why?
 
-Depending on your use case you might want to use a different log implementation. Logrus looks nice on a console output, but is a rather slow JSON logger.   
+Depending on your use case you might want to use a different log implementation. Logrus looks nice on a console output, but is a rather slow JSON logger.
 
 Another reason might be you want to use multiple parametrized loggers. This package allows you to wrap multiple loggers around a single interface. Each logger can have its own io.Writer as Output and its own log level set. This way, you can send only Error+Above levels to one of your log servers and have a second log server which gets log levels of all type, plus a third logger which prints errors to stdout.
 
@@ -84,40 +84,6 @@ Output:
 INFO[0000] message                                       fields.time="2019-03-29 15:57:51.307562 -0500 -05 m=+0.000549599" key=value
 ERRO[0000] additional message                            err="additional trace: err1" err_stack="/Users/leo/Documents/code/vgo/test/main.go:16: err1\n/Users/leo/Documents/code/vgo/test/main.go:17: additional trace" fields.time="2019-03-29 15:57:51.307811 -0500 -05 m=+0.000799046"
 {"level":"error","err":"additional trace: err1","err_stack":"/Users/leo/Documents/code/vgo/test/main.go:16: err1\n/Users/leo/Documents/code/vgo/test/main.go:17: additional trace","time":1553893071,"message":"additional message"}
-```
-
-
-### Customized logger
-
-Customize your logrus parameters
-
-```go
-package main
-
-import (
-	"time"
-
-	"github.com/leononame/logger"
-	"github.com/sirupsen/logrus"
-)
-
-func main() {
-	ll := logrus.New()
-	ll.WithField("source", "cli_client")
-	ll.SetLevel(logrus.WarnLevel)
-	// Alternatively: logger.FromZerolog instantiates a Logger with zerolog implementation
-	l := logger.FromLogrus(ll)
-	l.Info().AddStr("key", "value").Flush("message")
-	l.Warn().AddInt("iteration", 1000).Flush("finished calculation")
-	l.Error().AddDur("duration", time.Minute).Flush("duration calculated")
-}
-```
-
-Output:
-
-```
-WARN[0000] finished calculation                          fields.time="2019-03-29 16:02:58.70876 -0500 -05 m=+0.000626253" iteration=1000
-ERRO[0000] duration calculated                           duration=1m0s fields.time="2019-03-29 16:02:58.708996 -0500 -05 m=+0.000862119"
 ```
 
 ## Logger API
